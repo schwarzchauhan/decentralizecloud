@@ -1,8 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
 import "./FileUpload.css";
+import testAuthentication from "./testPinata";
+
 const FileUpload = ({ contract, account, provider }) => {
   const [file, setFile] = useState(null);
+  const [nachricht, setNachricht] = useState(null);
   const [fileName, setFileName] = useState("No image selected");
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -11,25 +14,26 @@ const FileUpload = ({ contract, account, provider }) => {
         const formData = new FormData();
         formData.append("file", file);
 
+        // add picturesque data to pinata P2P blockchain network
         const resFile = await axios({
           method: "post",
           url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
           data: formData,
           headers: {
-            pinata_api_key: `8c81db3b98ae333fff15`,
-            pinata_secret_api_key: `0ab1f0182686b190dd3ce6ff8567aed1fa0c362bff5689b597b422912c77252c`,
+            'pinata_api_key': `8c03d31d88531abe42dc`,
+            'pinata_secret_api_key': `950ca8bb2917ba89e252729c4698cf092263af6252cb7a2046161bf95d8e6008`,
             "Content-Type": "multipart/form-data",
           },
         });
         const ImgHash = `ipfs://${resFile.data.IpfsHash}`;
         //const signer = contract.connect(provider.getSigner());
         // const signer = contract.connect(provider.getSigner());
-        contract.add(account, ImgHash);
+        contract.add(account, ImgHash);                             // invoking add function of our smart contract(to add image url)
         alert("Successfully Image Uploaded");
         setFileName("No image selected");
         setFile(null);
       } catch (e) {
-        alert("Unable to upload image to Pinata");
+        alert("Unable to upload image to IPFS");
       }
     }
   };
@@ -38,11 +42,41 @@ const FileUpload = ({ contract, account, provider }) => {
     console.log(data);
     const reader = new window.FileReader();
     reader.readAsArrayBuffer(data);
-    reader.onloadend = () => {
+    reader.onloadend = () => {        // when file fully read
       setFile(e.target.files[0]);
     };
     setFileName(e.target.files[0].name);
+    e.preventDefault();                 // to avoid reloading
+  };
+  const saveNachricht = async (e) => {
     e.preventDefault();
+    try {
+      // testAuthentication();
+      var json = JSON.stringify({
+        "text" : nachricht
+      });
+      console.log(json);      
+      var config = {
+        method: 'post',
+        url: 'https://api.pinata.cloud/pinning/pinJSONToIPFS',
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJiNTg2YzFiMS0wNDEwLTRiMDEtYmQyYi0xNGFjYjU5NGI0ZWMiLCJlbWFpbCI6ImhhcnNoY2hhdWhhbjA5OTRAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBpbl9wb2xpY3kiOnsicmVnaW9ucyI6W3siaWQiOiJGUkExIiwiZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjF9LHsiaWQiOiJOWUMxIiwiZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjF9XSwidmVyc2lvbiI6MX0sIm1mYV9lbmFibGVkIjpmYWxzZSwic3RhdHVzIjoiQUNUSVZFIn0sImF1dGhlbnRpY2F0aW9uVHlwZSI6InNjb3BlZEtleSIsInNjb3BlZEtleUtleSI6IjhjMDNkMzFkODg1MzFhYmU0MmRjIiwic2NvcGVkS2V5U2VjcmV0IjoiOTUwY2E4YmIyOTE3YmE4OWUyNTI3MjljNDY5OGNmMDkyMjYzYWY2MjUyY2I3YTIwNDYxNjFiZjk1ZDhlNjAwOCIsImlhdCI6MTY4MzEzNjQyM30.O1BRh8hsRXl6gYmw87Lz0XJOn536InzUv17zTrFkBBw'
+        },
+        data : json
+      };
+      const res = await axios(config);
+      console.log(res.data);
+    } catch (error) {
+      alert("Unable to save texts to IPFS");
+    }
+
+  } 
+  const retrieveNachricht = (e) => {
+    const eltexto = e.target.value;        // onChange hook retrieve hook
+    console.log(eltexto);
+    setNachricht(eltexto);
+    e.preventDefault();                     // to avoid reloading
   };
   return (
     <div className="top">
@@ -61,6 +95,12 @@ const FileUpload = ({ contract, account, provider }) => {
         <button type="submit" className="upload glow-on-hover" disabled={!file}>
           Upload File
         </button>
+      </form>
+      <form onSubmit={saveNachricht}>
+        <textarea name="nachricht" id="" cols="30" rows="10" onChange={retrieveNachricht}>
+          
+        </textarea>
+        <button type="submit">PINATA EPITOME</button>
       </form>
     </div>
   );

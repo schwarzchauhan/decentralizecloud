@@ -18,22 +18,22 @@ function App() {
 
     const loadProvider = async () => {
       if (provider) {
-        window.ethereum.on("chainChanged", () => {
+        window.ethereum.on("chainChanged", () => {   // provided by metamask
           window.location.reload();
         });
 
-        window.ethereum.on("accountsChanged", () => {
+        window.ethereum.on("accountsChanged", () => {  // provided by metamask
           window.location.reload();
         });
-        await provider.send("eth_requestAccounts", []);
-        const signer = provider.getSigner();
+        await provider.send("eth_requestAccounts", []); // to open metamask
+        const signer = provider.getSigner();            // to write data on blockchain
         const address = await signer.getAddress();
         setAccount(address);
         let contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
         const contract = new ethers.Contract(
           contractAddress,
-          Upload.abi,
+          Upload.abi,          // fetched abi
           signer
         );
         console.log(contract);
@@ -43,7 +43,7 @@ function App() {
         console.error("Metamask is not installed");
       }
     };
-    provider && loadProvider();
+    provider && loadProvider();   //  execute only if provider available
   }, []);
 
   return (
@@ -63,8 +63,8 @@ function App() {
         ></FileUpload>
         <Display contract={contract} account={account}></Display>
 
-      <div class="area" >
-                  <ul class="circles">
+      <div className="area" >
+                  <ul className="circles">
                           <li></li>
                           <li></li>
                           <li></li>
