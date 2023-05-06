@@ -2,6 +2,7 @@ import Upload from "./artifacts/contracts/Upload.sol/Upload.json";
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import FileUpload from "./components/FileUpload";
+import Modal from "./components/Modal";
 import Display from "./components/Display";
 // import Modal from "./components/Modal";
 import "./App.css";
@@ -47,6 +48,15 @@ function App() {
   }, []);
 
   return (
+    <>
+    {!modalOpen && (
+        <button className="share" onClick={() => setModalOpen(true)}>
+          Share
+        </button>
+      )}
+      {modalOpen && (
+        <Modal setModalOpen={setModalOpen} contract={contract}></Modal>
+      )}
     <div className="App">
       <h1 style={{ color: "black" }}>ETHERIUM BLOCKCHAIN DRIVE</h1>
       {/* <div className="bg"></div>
@@ -79,6 +89,7 @@ function App() {
           </div >
 
     </div>
+    </>
     
   );
 }
