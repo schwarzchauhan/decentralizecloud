@@ -67,6 +67,9 @@ const FileUpload = ({ contract, account, provider }) => {
       };
       const res = await axios(config);
       console.log(res.data);
+      const txtHash = `ipfs://${res.data.IpfsHash}`;
+      contract.add(account, txtHash);                             // invoking add function of our smart contract(to add image url)
+      alert("Successfully textual Uploaded");
     } catch (error) {
       alert("Unable to save texts to IPFS");
     }

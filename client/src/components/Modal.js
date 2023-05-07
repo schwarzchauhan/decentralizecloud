@@ -6,6 +6,11 @@ const Modal = ({ setModalOpen, contract }) => {
     await contract.allow(address);
     setModalOpen(false);
   };
+  const revoke = async () => {
+    const address = document.querySelector(".address").value;
+    await contract.disallow(address);
+    setModalOpen(false);
+  };
   useEffect(() => {
     const accessList = async () => {
       const addressList = await contract.shareAccess();
@@ -14,7 +19,8 @@ const Modal = ({ setModalOpen, contract }) => {
       console.log(addressList, options.length);
 
       for (let i = 0; i < options.length; i++) {
-        let opt = options[i];
+        let opt = options[i][0];
+        console.log(opt);
         let e1 = document.createElement("option");
         e1.textContent = opt;
         e1.value = opt;
@@ -51,6 +57,7 @@ const Modal = ({ setModalOpen, contract }) => {
               Cancel
             </button>
             <button onClick={() => sharing()}>Share</button>
+            <button onClick={() => revoke()}>Revoke</button>
           </div>
         </div>
       </div>
